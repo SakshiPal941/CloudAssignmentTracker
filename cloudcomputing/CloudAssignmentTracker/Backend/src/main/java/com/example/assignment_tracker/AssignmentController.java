@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Arrays;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class AssignmentController {
 
     @GetMapping("/api/assignments")
