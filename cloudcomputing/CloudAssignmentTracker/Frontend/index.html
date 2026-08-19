@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Assignment Tracker</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="dashboard-container">
+
+    <header>
+        <h1>📊 Cloud Assignment Tracker</h1>
+        <p>Data loaded from the backend VM</p>
+    </header>
+
+    <hr>
+
+    <main>
+        <h2>Current Assignments</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Assignment Name</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="assignment-rows">
+                <tr>
+                    <td colspan="2">🔄 Loading...</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
