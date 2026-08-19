@@ -14,7 +14,8 @@ fetch("http://localhost:8080/api/assignments")
 
             table.innerHTML += `
                 <tr>
-                    <td>${assignment}</td>
+                    <td>${assignment.title}</td> 
+                    <td>${assignment.status}</td>
                     <td>Active</td>
                 </tr>
             `;
