@@ -4,34 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cloud Assignment Tracker</title>
-<link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div class="dashboard-container">
 
+    <div class="topbar"></div>
+
     <header>
-        <h1>Cloud Assignment Tracker</h1>
-        <p>Data loaded from the backend VM</p>
+        <div class="brand">
+            <span class="brand-mark">☁ cloud-assignment-tracker</span>
+            <h1>Assignment Tracker</h1>
+        </div>
+        <div class="vm-status">
+            <span class="pulse-dot"></span>
+            <span>Data loaded from the backend VM</span>
+        </div>
     </header>
 
-    <hr>
-
     <main>
-        <h2>Current Assignments</h2>
+        <div class="section-head">
+            <h2>Current assignments</h2>
+            <span class="row-count" id="row-count"></span>
+        </div>
 
         <table>
             <thead>
                 <tr>
-                    <th>Assignment Name</th>
+                    <th>Assignment name</th>
                     <th>Status</th>
                 </tr>
             </thead>
 
             <tbody id="assignment-rows">
                 <tr>
-                    <td colspan="2">🔄 Loading...</td>
+                    <td colspan="2" class="loading-row">
+                        <span class="pulse-dot small"></span> Loading assignments&hellip;
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -40,5 +54,6 @@
 </div>
 
 <script src="app.js"></script>
+<script src="status-enhance.js"></script>
 </body>
 </html>
