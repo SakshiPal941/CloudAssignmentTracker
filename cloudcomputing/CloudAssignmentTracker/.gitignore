@@ -58,3 +58,4 @@ build/
 
 ## Vagrant ###
 .vagrant/
+*.log
