@@ -26,9 +26,9 @@ Vagrant.configure("2") do |config|
 
     # Build and run the Spring Boot backend
     cd /vagrant/Backend
+    pkill -f 'assignment-tracker-0.0.1-SNAPSHOT.jar' || true
     mvn clean package -DskipTests
     JAR_FILE=$(find /vagrant/Backend/target -maxdepth 1 -name "*.jar" ! -name "*sources*" | head -n 1)
-    pkill -f "$JAR_FILE" || true
     nohup java -jar "$JAR_FILE" \
       --spring.datasource.url="jdbc:postgresql://localhost:5432/cosc349" \
       --spring.datasource.username="postgres" \
