@@ -41,14 +41,16 @@ Vagrant.configure("2") do |config|
    backend.vm.provision "shell", inline: <<-SHELL
     apt-get update
     apt-get install -y openjdk-17-jdk maven
-    # Build and run the Spring Boot backend
-    cd /vagrant/Backend
+    # Build outside the VirtualBox shared folder so Maven can replace its output files.
+    rm -rf /tmp/Backend
+    cp -r /vagrant/Backend /tmp/Backend
+    cd /tmp/Backend
     pkill -f 'assignment-tracker-0.0.1-SNAPSHOT.jar' || true
     until (echo > /dev/tcp/192.168.2.12/5432) 2>/dev/null; do
       sleep 2
     done
     mvn clean package -DskipTests
-    JAR_FILE=$(find /vagrant/Backend/target -maxdepth 1 -name "*.jar" ! -name "*sources*" | head -n 1)
+    JAR_FILE=$(find /tmp/Backend/target -maxdepth 1 -name "*.jar" ! -name "*sources*" | head -n 1)
     nohup java -jar "$JAR_FILE" \
       --spring.datasource.url="jdbc:postgresql://192.168.2.12:5432/cosc349" \
       --spring.datasource.username="postgres" \
@@ -70,7 +72,7 @@ Vagrant.configure("2") do |config|
      sudo -u postgres psql -tc "SELECT 1 FROM pg_database WHERE datname = 'cosc349'" | grep -q 1 || sudo -u postgres createdb cosc349
      # Allow connections from the backend VM, not just localhost
      sed -i "s/^#listen_addresses.*/listen_addresses = '*'/" /etc/postgresql/*/main/postgresql.conf
-     echo "host all all 192.168.2.13/32 md5" >> /etc/postgresql/*/main/pg_hba.conf
+    grep -qxF "host all all 192.168.2.13/32 md5" /etc/postgresql/*/main/pg_hba.conf || echo "host all all 192.168.2.13/32 md5" >> /etc/postgresql/*/main/pg_hba.conf
      service postgresql restart
     sudo -u postgres psql -d cosc349 -f /vagrant/setup-database.sql
    SHELL
