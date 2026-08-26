@@ -5,6 +5,14 @@
 Vagrant.configure("2") do |config|
 
   config.vm.box = "ubuntu/jammy64"
+  # vagrant-vbguest can crash trying to match guest additions against newer VirtualBox host versions; skip it.
+  config.vbguest.auto_update = false if Vagrant.has_plugin?("vagrant-vbguest")
+
+  # The box's guest additions userland tools are missing, so Vagrant's own /vagrant
+  # auto-mount silently gets skipped. Force the mount before any other provisioning runs.
+  config.vm.provision "shell", run: "always", inline: <<-SHELL
+    mountpoint -q /vagrant || mount -t vboxsf vagrant /vagrant -o uid=1000,gid=1000
+  SHELL
 
    config.vm.define "webserver" do |webserver|
    webserver.vm.hostname = "webserver"
@@ -13,8 +21,8 @@ Vagrant.configure("2") do |config|
 
    webserver.vm.provision "shell", inline: <<-SHELL
     apt-get update
-    apt-get install -y openjdk-17-jdk maven nginx
-    
+    apt-get install -y nginx
+
   # Change VM's webserver's configuration to use shared folder.
     # (Look inside test-website.conf for specifics.)
     cp /vagrant/test-website.conf /etc/nginx/sites-available/
@@ -22,6 +30,17 @@ Vagrant.configure("2") do |config|
     ln -sf /etc/nginx/sites-available/test-website.conf /etc/nginx/sites-enabled/
     rm -f /etc/nginx/sites-enabled/default
     service nginx reload
+  SHELL
+ end
+
+ config.vm.define "backend" do |backend|
+   backend.vm.hostname = "backend"
+   backend.vm.network "forwarded_port", guest: 8080, host: 8081, host_ip: "127.0.0.1"
+   backend.vm.network "private_network", ip: "192.168.2.13"
+
+   backend.vm.provision "shell", inline: <<-SHELL
+    apt-get update
+    apt-get install -y openjdk-17-jdk maven
     # Build and run the Spring Boot backend
     cd /vagrant/Backend
     pkill -f 'assignment-tracker-0.0.1-SNAPSHOT.jar' || true
@@ -36,7 +55,6 @@ Vagrant.configure("2") do |config|
       --spring.datasource.password="password" \
       > /var/log/backend.log 2>&1 &
     sleep 15
-
   SHELL
  end
 
@@ -49,10 +67,10 @@ Vagrant.configure("2") do |config|
      apt-get install -y postgresql postgresql-contrib
 
      sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'password';"
-    sudo -u postgres psql -tc "SELECT 1 FROM pg_database WHERE datname = 'cosc349'" | grep -q 1 || sudo -u postgres createdb cosc349
-     # Allow connections from the webserver VM, not just localhost
+     sudo -u postgres psql -tc "SELECT 1 FROM pg_database WHERE datname = 'cosc349'" | grep -q 1 || sudo -u postgres createdb cosc349
+     # Allow connections from the backend VM, not just localhost
      sed -i "s/^#listen_addresses.*/listen_addresses = '*'/" /etc/postgresql/*/main/postgresql.conf
-     echo "host all all 192.168.2.11/32 md5" >> /etc/postgresql/*/main/pg_hba.conf
+     echo "host all all 192.168.2.13/32 md5" >> /etc/postgresql/*/main/pg_hba.conf
      service postgresql restart
     sudo -u postgres psql -d cosc349 -f /vagrant/setup-database.sql
    SHELL
