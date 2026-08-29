@@ -7,6 +7,10 @@ Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/jammy64"
   # vagrant-vbguest can crash trying to match guest additions against newer VirtualBox host versions; skip it.
   config.vbguest.auto_update = false if Vagrant.has_plugin?("vagrant-vbguest")
+  # The ubuntu/jammy64 box occasionally hits severe (but harmless) kernel "soft lockup"
+  # watchdog storms during boot on some VirtualBox/host combinations, which can push
+  # SSH readiness past Vagrant's default 300s boot_timeout. Give it more headroom.
+  config.vm.boot_timeout = 600
 
   # The box's guest additions userland tools are missing, so Vagrant's own /vagrant
   # auto-mount silently gets skipped. Force the mount before any other provisioning runs.
@@ -63,6 +67,10 @@ Vagrant.configure("2") do |config|
  config.vm.define "dbserver" do |dbserver|
    dbserver.vm.hostname = "dbserver"
    dbserver.vm.network "private_network", ip: "192.168.2.12"
+   # Pin the SSH forwarded port explicitly: Vagrant's auto-assigned port can collide
+   # with unrelated VirtualBox VMs already holding a host port (e.g. another
+   # environment's default port 2222), leaving SSH silently unreachable.
+   dbserver.vm.network "forwarded_port", guest: 22, host: 2210, id: "ssh", auto_correct: true
 
    dbserver.vm.provision "shell", inline: <<-SHELL
      apt-get update
