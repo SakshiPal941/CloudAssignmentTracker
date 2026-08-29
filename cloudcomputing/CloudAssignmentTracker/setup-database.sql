@@ -6,9 +6,11 @@ CREATE TABLE IF NOT EXISTS assignments (
   title VARCHAR(255)
 );
 
---Test data
-INSERT INTO assignments (title, description, due_date, status) VALUES ('COSC349 Assignment 1', 'Virtualisation and portable deployment', '2026-09-08', 'IN_PROGRESS');
-INSERT INTO assignments (title, description, due_date, status) VALUES ('COSC349 Assignment 2', 'Distributed systems project', '2026-10-15', 'PENDING');
-INSERT INTO assignments (title, description, due_date, status) VALUES ('COSC249 Essay', 'Literature review draft', '2026-09-20', 'PENDING');
-INSERT INTO assignments (title, description, due_date, status) VALUES ('Test Assignment', 'Testing the POST endpoint', '2026-09-01', 'PENDING');
-INSERT INTO assignments (title, description, due_date, status) VALUES ('COSC345 Software Engineering Project', 'Software engineering project', '2026-10-15', 'PENDING');
+TRUNCATE TABLE assignments RESTART IDENTITY;
+
+INSERT INTO assignments (title, description, due_date, status) VALUES
+  ('COSC343 Assignment 2', 'Warehouse Robots', '2026-09-15', 'IN_PROGRESS'),
+  ('INFO304 Assignment 2', 'Logistic Regression', '2026-09-11', 'PENDING'),
+  ('COSC349 Assignment 2', 'Cloud Commputing', '2026-10-05', 'PENDING'),
+  ('COSC345 Software Engineering Project', 'Software engineering project', '2026-10-15', 'PENDING'),
+  ('COSC345 Individual Report', 'Evidence Review Individual Report', '2026-09-18', 'PENDING');

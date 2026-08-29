@@ -1,59 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloud Assignment Tracker</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Assignment Tracker</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <div class="frame">
+        <div class="pad">
+            <div class="binding">
+                <i class="hole"></i>
+                <i class="hole"></i>
+                <i class="hole"></i>
+                <i class="hole"></i>
+                <i class="hole"></i>
+            </div>
+            <div class="body">
+                <div class="kicker">Welcome to your</div>
+                <h1>Assignment Tracker</h1>
+                <div class="meta">
+                    <span class="chip">Semester 2 &middot; 2026</span>
+                    <span class="count" id="count"></span>
+                </div>
 
-<div class="dashboard-container">
+                <div class="tabs" id="tabs"></div>
+                <div id="list"></div>
 
-    <div class="topbar"></div>
-
-    <header>
-        <div class="brand">
-            <span class="brand-mark">☁ welcome to your assignment tracker</span>
-            <h1>Assignment Tracker</h1>
+                <form id="form" hidden>
+                    <div class="field big">
+                        <label for="f-title">Title</label>
+                        <input id="f-title" placeholder="COSC345 Software Engineering Project" required>
+                    </div>
+                    <div class="grid2">
+                        <div class="field">
+                            <label for="f-description">Course</label>
+                            <input id="f-description" placeholder="COSC345">
+                        </div>
+                        <div class="field">
+                            <label for="f-due">Due</label>
+                            <input id="f-due" type="date" required>
+                        </div>
+                        <div class="field">
+                            <label for="f-status">Status</label>
+                            <select id="f-status">
+                                <option value="PENDING">Pending</option>
+                                <option value="IN_PROGRESS">In progress</option>
+                                <option value="COMPLETED">Done</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button type="submit" class="save" id="save">Add assignment</button>
+                        <button type="button" class="cancel" id="cancel">Cancel</button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="vm-status">
-            <span class="pulse-dot"></span>
-            <span>Loading Data</span>
-        </div>
-    </header>
+    </div>
 
-    <main>
-        <div class="section-head">
-            <h2>Current assignments</h2>
-            <span class="row-count" id="row-count"></span>
-        </div>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Assignment name</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-
-            <tbody id="assignment-rows">
-                <tr>
-                    <td colspan="2" class="loading-row">
-                        <span class="pulse-dot small"></span> Loading assignments&hellip;
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </main>
-
-</div>
-
-<script src="app.js"></script>
-<script src="status-enhance.js"></script>
+    <script src="app.js"></script>
+    <script src="status-enhance.js"></script>
 </body>
+
 </html>
