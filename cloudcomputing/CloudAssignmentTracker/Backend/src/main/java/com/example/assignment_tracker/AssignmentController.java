@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
  
 import java.util.List;
  
-// CORS is handled entirely by nginx (see test-website.conf), so no @CrossOrigin here.
+
 @RestController
 public class AssignmentController {
  
