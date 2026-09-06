@@ -97,3 +97,31 @@ The backend connects to PostgreSQL through an SSH tunnel. The `dbserver` creates
 - A stable internet connection for the first setup (to download the Ubuntu box and Maven dependencies)
 
 
+
+# 4. How To Destroy Cleanly
+Destroying is very important for maintaining a clean environment and ensuring setup runs smoothly. Once finished using virtual machines, run these commands:
+
+Destroy all virtual machines
+- vagrant destroy -f
+
+Delete the shared tunnel key from the host. Because dbserver writes the SSH tunnel keypair to a file on the host instead of VM-local storage, `vagrant destroy` never removes it. This affects reproducibility: one person could
+end up reusing the same SSH key/environment across every rebuild, which can hide configuration issues that a truly fresh setup would expose. If someone else tries to replicate the work, they'd be starting from an environment that's effectively been built up over multiple sessions, rather than a genuinely clean one.
+- Remove-Item -Recurse -Force .\tunnel_keys
+
+Confirm the ports were released. If not confirmed, a zombie process will silently hold onto the port. This means upon next startup one of the servers may fail to bind its port and the whole environment fails to start. This was an issue we ran into multiple times, so is important to check.
+- Get-NetTCPConnection -LocalPort 2210,8080,8081 -ErrorAction SilentlyContinue
+
+Check for orphaned processes. This confirms vagrant destroy -f happened cleanly. Otherwise, there will be an old VM running, causing port conflicts, resource issues and lock errors. 
+- Get-Process | Where-Object { $_.ProcessName -match "ruby|vagrant|VBoxHeadless" }
+
+Prune Vagrant's global index. Sometimes a VM gets destroyed or removed, but Vagrant's own index still has a leftover ghost entry for it, since the index isn't always updated cleanly. This can cause confusion or conflicts when checking machine status later. Running this command refreshes Vagrant's index so it only reflects machines that actually still exist.
+- vagrant global-status --prune
+
+Finally as a sanity check, VirtualBox Manager should confirm 
+cloudassignmenttracker_dbserver_,
+cloudassignmenttracker_backend_,
+cloudassignmenttracker_webserver_,
+are gone from the VM list, and check File → Host Network Manager to confirm there are no orphaned 192.168.2.x host-only adapters. Running `vagrant global-status` should no longer show entries for webserver, backend, or dbserver from this project (it may still list VMs from other, unrelated Vagrant projects on the machine).
+
+
+
