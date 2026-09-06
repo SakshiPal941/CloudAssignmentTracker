@@ -96,9 +96,25 @@ The backend connects to PostgreSQL through an SSH tunnel. The `dbserver` creates
 - At least ~4 GB free RAM and a few GB free disk space
 - A stable internet connection for the first setup (to download the Ubuntu box and Maven dependencies)
 
+# 4. How To Run
+Although it's easy to simply boot the VM's with a simple 'vagrant up', attention should be paid to making sure you're starting from a clean environment to avoid unecessary stress and debugging. 
+
+Confirm you're starting from a clean slate. These commands check for leftover VMs or processes from this project or others, that might still be running or taking up resources. If anything shows up unexpectedly, you can halt and destroy it now to free up resources and prevent conflicts before starting.
+- Get-Process | Where-Object { $_.ProcessName -match "ruby|vagrant|VBoxHeadless" } (Checks entire system)
+- vagrant global-status --prune (Checks within vagrant)
+
+Confirm your system isn't holding onto an old SSH identity. This is for reasons listed in the destroy cleanly section. It provides true reproducibility if another person wanted to replicate our VM.
+- Test-Path .\tunnel_keys
+- If this returns True and you want a fresh SSH identity rather than reusing a previous session's key, delete it: `Remove-Item -Recurse -Force .\tunnel_keys`
+
+Bring up the VMs. This is the actual startup command, everything above is just good practice to make sure you're starting from a clean slate, and can be skipped if you're confident nothing's left over. This command alone handles the entire environment: no manual setup on the VMs is needed, it provisions and starts everything automatically.
+- vagrant up
+
+Verify all three VM's are running. Alternatively you can check for dbserver, backendserver and frontendserver in Virtual Box.
+- vagrant status
 
 
-# 4. How To Destroy Cleanly
+# 5. How To Destroy Cleanly
 Destroying is very important for maintaining a clean environment and ensuring setup runs smoothly. Once finished using virtual machines, run these commands:
 
 Destroy all virtual machines
